@@ -1,0 +1,15 @@
+$font-famaly: Helvetica, sans-serif;
+$primary-color: #333;
+$text-color: white;
+
+body {
+  font-family: $font-famaly;
+  color: $text-color;
+  background: $primary-color;
+  .alert {
+    padding: 5px;
+    button {
+      outline: none;
+    }
+  }
+}

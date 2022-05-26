@@ -1,0 +1,115 @@
+#list {
+  list-style: none;
+  padding: 0;
+}
+
+img {
+  -webkit-user-drag: none;
+}
+
+body {
+  user-select: none;
+  background: rgb(63, 94, 251);
+  background: radial-gradient(circle, rgb(63, 94, 251) 0%, rgb(70, 182, 252) 100%);
+  display: grid;
+  grid-template-columns: 1fr 500px 1fr;
+  grid-template-rows: 100px 2fr 70px;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  font-family: Roboto, serif;
+  min-width: 550px;
+}
+body #garbage {
+  width: 16px;
+  height: 16px;
+}
+body h1 {
+  grid-area: 1/2/2/3;
+  text-align: center;
+}
+body #ui-container {
+  -webkit-box-shadow: 2px 2px 4px 3px rgba(22, 22, 22, 0.78);
+  box-shadow: 2px 2px 4px 3px rgba(22, 22, 22, 0.78);
+  border-radius: 4px;
+}
+body div {
+  background-color: white;
+  grid-area: 2/2/3/3;
+  margin: 20px;
+  margin-bottom: 10px;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+body div #front-text {
+  margin: 15px;
+  margin-left: 18px;
+  font-size: 25px;
+  font-weight: 700;
+}
+body div #new-task-form {
+  margin: 10px;
+  margin-top: 30px;
+}
+body div #new-task-form #new-task-title {
+  width: 380px;
+  border-color: rgb(92, 92, 92);
+  border-radius: 3px;
+  margin-right: 3px;
+}
+body div #scrollable-div {
+  margin: 0px;
+  height: 350px;
+  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+body div #scrollable-div #list {
+  display: flex;
+  height: auto;
+  flex-direction: column;
+  justify-content: space-around;
+}
+body div #scrollable-div #list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #e3e3e3;
+  border-color: #333;
+  border-radius: 3px;
+  margin: 3px;
+  margin-left: 10px;
+  width: 410px;
+}
+body div #scrollable-div #list li label input {
+  margin-right: 10px;
+  cursor: pointer;
+  height: 12;
+}
+body div #scrollable-div #list li button {
+  border: 0px;
+  background-color: transparent;
+}
+body div #scrollable-div #list li button:hover {
+  cursor: pointer;
+}
+
+#bottom-container {
+  margin: 2px;
+  grid-area: 3/2/4/3;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+#bottom-container #clear {
+  margin: 10px;
+  margin-top: 15px;
+  margin-bottom: 16;
+}
+#bottom-container #clear:hover {
+  cursor: pointer;
+}
+#bottom-container #pending-tasks {
+  margin-left: 10px;
+  margin-bottom: 17px;
+}

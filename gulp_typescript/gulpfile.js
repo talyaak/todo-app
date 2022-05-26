@@ -40,7 +40,12 @@ gulp.task('scss', () => {
 
 // Transfers index
 gulp.task('index', () => {
-  return gulp.src(['./src/index.html', './src/favicon.ico'])
+  return gulp.src(['./src/index.html'])
+    .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('icons', () => {
+  return gulp.src(['./src/icons/delete.png'])
     .pipe(gulp.dest('./dist'));
 });
 
@@ -89,6 +94,7 @@ gulp.task('default', gulp.series(
   'index',
   'build',
   'clean',
+  'icons',
   gulp.parallel('browser-sync', 'browser-sync-watch', 'watch-scss', 'watch-html', 'watch-ts'),
   cb => cb()
 ));

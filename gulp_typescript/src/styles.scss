@@ -1,56 +1,143 @@
-$font-famaly: Helvetica, sans-serif;
+$font-famaly: David;
 $primary-color: #333;
+$secondary-color: rgb(255, 255, 255);
 $text-color: white;
 
+#list {
+  list-style: none;
+  padding: 0;
+}
+img {
+  -webkit-user-drag: none;
+}
 body {
-  font-family: $font-famaly;
-  color: $text-color;
-  background: $primary-color;
-  >.alert {
-    >input {
-      outline: none;
+  user-select: none;
+  background: rgb(63, 94, 251);
+  background: radial-gradient(circle, rgba(63, 94, 251, 1) 0%, rgba(70, 182, 252, 1) 100%);
+  display: grid;
+  grid-template-columns: 1fr 500px 1fr;
+  grid-template-rows: 100px 2fr 70px;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+
+  font-family: Roboto, serif;
+  min-width: 550px;
+
+  #garbage {
+    width: 16px;
+    height: 16px;
+  }
+
+  h1 {
+    grid-area: 1 / 2 / 2 / 3;
+    text-align: center;
+  }
+
+  #ui-container {
+    -webkit-box-shadow: 2px 2px 4px 3px rgba(22, 22, 22, 0.78);
+    box-shadow: 2px 2px 4px 3px rgba(22, 22, 22, 0.78);
+    border-radius: 4px;
+
+  }
+
+  div {
+    background-color: white;
+    grid-area: 2 / 2 / 3 / 3;
+    margin: 20px;
+    margin-bottom: 10px;
+    // display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    #front-text {
+
+      margin: 15px;
+      margin-left: 18px;
+      font-size: 25px;
+      font-weight: 700;
+
     }
-  }
-  >.select {
-    margin-top: 10px;
-    >select {
-      outline: none;
+
+    #new-task-form {
+      // border: black solid 2px;
+      margin: 10px;
+      margin-top: 30px;
+
+      #new-task-title {
+
+        width: 380px;
+        border-color: rgb(92, 92, 92);
+        border-radius: 3px;
+        margin-right: 3px;
+      }
     }
-  }
-  #display {
-    height: 200px;
-    font-size: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  #dialog {
-    display: none;
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,.3);
-    top: 0;
-    left: 0;
-    justify-content: center;
-    align-items: center;
-    >.card {
-      width: 300px;
-      padding: 15px;
-      border-radius: 7px;
-      background: white;
-      color: #222;
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-      #message {
+
+    #scrollable-div {
+      margin: 0px;
+      height: 350px;
+      overflow: scroll;
+      overflow-x:hidden;
+      overflow-y:auto;
+
+      #list {
         display: flex;
-        justify-content: center;
-        margin-bottom: 10px;
-      }
-      button {
-        width: 100px;
+        height: auto;
+        flex-direction: column;
+        justify-content: space-around;
+
+        li {
+          display: flex;
+          justify-content: space-between;
+          padding: 10px;
+          background-color: #e3e3e3;
+          border-color: #333;
+          border-radius: 3px;
+          margin: 3px;
+          margin-left: 10px;
+          width: 410px;
+
+          label {
+            input {
+              margin-right: 10px;
+              cursor: pointer;
+              height: 12;
+            }
+          }
+
+          button {
+            border: 0px;
+            background-color: transparent;
+
+            &:hover {
+              cursor: pointer;
+            }
+          }
+        }
+
       }
     }
+  }
+}
+
+#bottom-container {
+  margin: 2px;
+  grid-area: 3 / 2 / 4 / 3;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  #clear {
+    margin: 10px;
+    margin-top: 15px;
+    margin-bottom: 16;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  #pending-tasks {
+    margin-left: 10px;
+    margin-bottom: 17px;
   }
 }

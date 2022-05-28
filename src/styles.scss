@@ -23,7 +23,7 @@ body {
   font-family: Roboto, serif;
   min-width: 550px;
 
-  #garbage {
+  #garbage, #edit {
     width: 16px;
     height: 16px;
   }
@@ -102,6 +102,10 @@ body {
               cursor: pointer;
               height: 12;
             }
+          }
+          #buttons-container {
+            margin:0px;
+            background-color: transparent;
           }
 
           button {

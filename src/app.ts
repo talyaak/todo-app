@@ -17,8 +17,10 @@ let tasks: Task[] = loadTasks(); // * using localStorage to load tasks (if they 
 
 pendingTasks.innerText = "You have 0 pending tasks"
 
+taskArrange();
 tasks.forEach(addListItem);
 
+// * Event listener for form completion
 form?.addEventListener("submit", e => {
   e.preventDefault(); // * preventing page refresh
 
@@ -35,11 +37,12 @@ form?.addEventListener("submit", e => {
     completed: false
   }
 
-  tasks.push(newTask); // * New task added, list updated
+  tasks = [newTask].concat(tasks); // * rearranging the task (recent task is first)
+  // tasks.push(newTask); // * New task added, list updated
   saveTasks(); // * localStorage is also updated
-
-  addListItem(newTask); // * adds the input to task list
-  input.value = ""; // * resets text bar
+  location.reload();
+  // addListItem(newTask); // * adds the input to task list
+  // input.value = ""; // * resets text bar
 
 })
 
@@ -50,14 +53,23 @@ clear.addEventListener("click", () => {
 
 })
 
-function addListItem(task: Task) {
+function addListItem(task: Task): void {
   const item = document.createElement("li");
   const label = document.createElement("label");
   const checkbox = document.createElement("input");
 
+  const editButton = document.createElement("button")
+  editButton.innerHTML = '<img src="edit.png" alt="" id="edit">';
+  editButton.addEventListener("click", () => editTask(task));
+
   const delButton = document.createElement("button");
   delButton.innerHTML = '<img src="delete.png" alt="" id="garbage">';
   delButton.addEventListener("click", () => deleteTask(task));
+
+  const buttonsContainer = document.createElement("div");
+  buttonsContainer.setAttribute("id","buttons-container");
+  buttonsContainer.appendChild(editButton);
+  buttonsContainer.appendChild(delButton);
 
   // * each task 'tick' will cause this
   checkbox.addEventListener("change", () => {
@@ -73,9 +85,9 @@ function addListItem(task: Task) {
   if (task.completed) { // * adding strike if task done (upon refresh)
     const s = document.createElement("s");
     s.append(label);
-    item.append(s, delButton);
+    item.append(s, buttonsContainer);
   }
-  else { item.append(label, delButton); }
+  else { item.append(label, buttonsContainer); }
 
   taskList?.append(item); // * '?' to prevent error when taskList == null
 
@@ -83,7 +95,7 @@ function addListItem(task: Task) {
 
 }
 
-function saveTasks() {
+function saveTasks(): void {
   localStorage.setItem("TASKS", JSON.stringify(tasks));
 }
 
@@ -93,7 +105,7 @@ function loadTasks(): Task[] {
   return JSON.parse(taskJSON); // * At least one task
 }
 
-function deleteTask(task: Task) {
+function deleteTask(task: Task): void {
   console.log("del clicked");
   let count = 0;
   for (let instance of tasks) {
@@ -107,16 +119,41 @@ function deleteTask(task: Task) {
   location.reload(); // * Refreshing UI
 }
 
+// * Prompts an "edit task" window and updates it
+function editTask(task: Task): void {
+  let updatedTask: string|null = prompt("Edit task", "enter here...");
+  if (typeof updatedTask === 'string' 
+    && updatedTask.trim().length !== 0
+    && updatedTask !== "enter here...") {
+    task.title = updatedTask;
+  }
+  else alert("did not enter a task");
+  saveTasks();
+  location.reload();
+  
+}
+// * Updates task number on UI
 function taskCount(): void {
   let completed: number = 0;
   for (let task of tasks) {
     if (task.completed) { completed++; }
   }
-  let uncompletedTasks:number = tasks.length-completed;
+  let uncompletedTasks: number = tasks.length - completed;
   if (uncompletedTasks > 1 || uncompletedTasks === 0) {
     pendingTasks.innerText = "You have " + uncompletedTasks + " pending tasks";
   }
   else {
     pendingTasks.innerText = "You have 1 pending task"
   }
+}
+
+// * Rearranges tasks so that uncompleted tasks are first
+function taskArrange(): void {
+  let completedTasks: Task[] = [];
+  let uncompletedTasks: Task[] = [];
+  for (let task of tasks) {
+    if (task.completed) { completedTasks.push(task); }
+    else { uncompletedTasks.push(task); }
+  }
+  tasks = uncompletedTasks.concat(completedTasks);
 }

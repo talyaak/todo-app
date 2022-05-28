@@ -45,7 +45,7 @@ gulp.task('index', () => {
 });
 
 gulp.task('icons', () => {
-  return gulp.src(['./src/icons/delete.png'])
+  return gulp.src(['./src/icons/*'])
     .pipe(gulp.dest('./dist'));
 });
 

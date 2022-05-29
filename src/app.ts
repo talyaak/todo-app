@@ -3,9 +3,6 @@ type Task = {
   completed: boolean
 }
 
-const garbageIcon = document.createElement("img");
-garbageIcon.setAttribute("src", "delete.png")
-
 const taskList = document.getElementById("list") as HTMLUListElement;
 const form = document.getElementById("new-task-form") as HTMLFormElement;
 const input = document.getElementById("new-task-title") as HTMLInputElement;
@@ -16,7 +13,9 @@ let tasks: Task[] = loadTasks(); // * using localStorage to load tasks (if they 
 
 pendingTasks.innerText = "You have 0 pending tasks"
 
-taskArrange();
+taskArrange(); // * For page reloads (arranges tasks by rules)
+
+// * For page reloads (for each task, a 'li' element is created and added)
 tasks.forEach(addListItem);
 
 // * Event listener for form completion
@@ -57,18 +56,7 @@ function addListItem(task: Task): void {
   const checkbox = document.createElement("input");
   const editPlaceholder = document.createElement("form");
 
-  const editButton = document.createElement("button")
-  editButton.innerHTML = '<img src="edit.png" alt="" id="edit">';
-  editButton.addEventListener("click", () => editTask(task, editPlaceholder));
-
-  const delButton = document.createElement("button");
-  delButton.innerHTML = '<img src="delete.png" alt="" id="garbage">';
-  delButton.addEventListener("click", () => deleteTask(task));
-
-  const buttonsContainer = document.createElement("div");
-  buttonsContainer.setAttribute("id", "buttons-container");
-  buttonsContainer.appendChild(editButton);
-  buttonsContainer.appendChild(delButton);
+  let buttonsContainer = makeButtons(task, editPlaceholder);
 
   // * each task 'tick' will cause this
   checkbox.addEventListener("change", () => {
@@ -127,13 +115,14 @@ function editTask(task: Task, editPlaceholder: HTMLFormElement): void {
   if (activeEdit) {
     const editList = document.body.getElementsByClassName("edit-element");
     for (let element of editList) {
-      // element.innerHTML = "";
       element.firstChild?.remove();
       element.lastChild?.remove();
     }
   }
-  if (editPlaceholder.innerHTML !== "") return; // * Checks if there's an edit element already
-  
+
+  // * Checks if there's an edit element already
+  if (editPlaceholder.innerHTML !== "") return; 
+
   // * if false, create edit element
   activeEdit = true;
 
@@ -142,12 +131,12 @@ function editTask(task: Task, editPlaceholder: HTMLFormElement): void {
 
   // * Configuring elements for edit
   editInput.setAttribute("type", "text");
-  editInput.setAttribute("autocomplete","off");
+  editInput.setAttribute("autocomplete", "off");
   editInput.setAttribute("id", "edit-title");
   editInput.setAttribute("placeholder", "update task..")
   const finish = document.createElement("button");
   finish.setAttribute("type", "submit");
-  finish.setAttribute("style","font-size:15px")
+  finish.setAttribute("style", "font-size:15px")
   finish.innerText = "✓";
 
   // * Applying them on the HTML
@@ -164,19 +153,8 @@ function editTask(task: Task, editPlaceholder: HTMLFormElement): void {
       location.reload();
     }
   })
-
-
-  // let updatedTask: string|null = prompt("Edit task", "enter here...");
-  // if (typeof updatedTask === 'string' 
-  //   && updatedTask.trim().length !== 0
-  //   && updatedTask !== "enter here...") {
-  //   task.title = updatedTask;
-  // }
-  // else alert("did not enter a task");
-  // saveTasks();
-  // location.reload();
-
 }
+
 // * Updates task number on UI
 function taskCount(): void {
   let completed: number = 0;
@@ -201,4 +179,66 @@ function taskArrange(): void {
     else { uncompletedTasks.push(task); }
   }
   tasks = uncompletedTasks.concat(completedTasks);
+}
+
+// * Moves given task up in list order
+function moveUp(task: Task): void {
+  let index = 0; // * index of task in task array
+  for (let tempTask of tasks) {
+    if (tempTask === task) break;
+    index++;
+  }
+  if (index === 0) return;
+  let newArr = tasks.slice(0, index - 1);
+  let arr2 = tasks.slice(index + 1);
+  newArr.push(task);
+  newArr.push(tasks[index - 1]);
+  tasks = newArr.concat(arr2);
+  saveTasks();
+  location.reload();
+}
+
+// * Moves given task down in list order
+function moveDown(task: Task): void {
+  let index = 0; // * index of task in task array
+  for (let tempTask of tasks) {
+    if (tempTask === task) break;
+    index++;
+  }
+  if (index === tasks.length - 1) return;
+  let newArr = tasks.slice(0, index);
+  let arr2 = tasks.slice(index + 2);
+  newArr.push(tasks[index + 1]);
+  newArr.push(task);
+  tasks = newArr.concat(arr2);
+  saveTasks();
+  location.reload();
+}
+
+// * Makes and returns functional buttons for each task 'li' element
+function makeButtons(task: Task, editPlaceholder: HTMLFormElement): HTMLDivElement {
+  const editButton = document.createElement("button")
+  editButton.innerHTML = '<img src="edit.png" alt="" id="edit">';
+  editButton.addEventListener("click", () => editTask(task, editPlaceholder));
+
+  const delButton = document.createElement("button");
+  delButton.innerHTML = '<img src="delete.png" alt="" id="garbage">';
+  delButton.addEventListener("click", () => deleteTask(task));
+
+  const upButton = document.createElement("button");
+  upButton.innerHTML = '<img src="up.png" alt="" id="up-button">';
+  upButton.addEventListener("click", () => moveUp(task));
+
+  const downButton = document.createElement("button");
+  downButton.innerHTML = '<img src="down.png" alt="" id="down-button">';
+  downButton.addEventListener("click", () => moveDown(task));
+
+  const buttonsContainer = document.createElement("div");
+  buttonsContainer.setAttribute("id", "buttons-container");
+  buttonsContainer.appendChild(upButton);
+  buttonsContainer.appendChild(downButton);
+  buttonsContainer.appendChild(editButton);
+  buttonsContainer.appendChild(delButton);
+
+  return buttonsContainer;
 }

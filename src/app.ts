@@ -13,10 +13,17 @@ let tasks: Task[] = loadTasks(); // * using localStorage to load tasks (if they 
 
 pendingTasks.innerText = "You have 0 pending tasks"
 
-taskArrange(); // * For page reloads (arranges tasks by rules)
+function initUI(): void {
+  if (taskList.textContent !== '') {
+    taskList.textContent = '';
+  }
 
-// * For page reloads (for each task, a 'li' element is created and added)
-tasks.forEach(addListItem);
+  input.value = '';
+  taskArrange(); // * For page reloads (arranges tasks by rules)
+  // loadTasks();
+  // * For page reloads (for each task, a 'li' element is created and added)
+  tasks.forEach(addListItem);
+}
 
 // * Event listener for form completion
 form?.addEventListener("submit", e => {
@@ -37,7 +44,7 @@ form?.addEventListener("submit", e => {
 
   tasks = [newTask].concat(tasks); // * rearranging the task (recent task is first)
   saveTasks(); // * localStorage is also updated
-  location.reload();
+  initUI();
 
 })
 
@@ -45,7 +52,7 @@ form?.addEventListener("submit", e => {
 clear.addEventListener("click", () => {
   console.log("pressed");
   localStorage.removeItem("TASKS");
-  location.reload();
+  initUI();
 
 })
 
@@ -62,7 +69,7 @@ function addListItem(task: Task): void {
   checkbox.addEventListener("change", () => {
     task.completed = checkbox.checked; // * task modified
     saveTasks(); // * task is changed, mandatory update!
-    location.reload();
+    initUI();
   })
 
   checkbox.type = "checkbox";
@@ -106,7 +113,7 @@ function deleteTask(task: Task): void {
   }
   tasks.splice(count, 1); // * deleting the task from list
   saveTasks(); // * Applying to localStorage
-  location.reload(); // * Refreshing UI
+  initUI(); // * Refreshing UI
 }
 
 // * Prompts an "edit task" window and updates it
@@ -121,7 +128,7 @@ function editTask(task: Task, editPlaceholder: HTMLFormElement): void {
   }
 
   // * Checks if there's an edit element already
-  if (editPlaceholder.innerHTML !== "") return; 
+  if (editPlaceholder.innerHTML !== "") return;
 
   // * if false, create edit element
   activeEdit = true;
@@ -150,7 +157,7 @@ function editTask(task: Task, editPlaceholder: HTMLFormElement): void {
       task.title = editInput?.value;
       saveTasks();
       activeEdit = false;
-      location.reload();
+      initUI();
     }
   })
 }
@@ -195,7 +202,7 @@ function moveUp(task: Task): void {
   newArr.push(tasks[index - 1]);
   tasks = newArr.concat(arr2);
   saveTasks();
-  location.reload();
+  initUI();
 }
 
 // * Moves given task down in list order
@@ -212,7 +219,7 @@ function moveDown(task: Task): void {
   newArr.push(task);
   tasks = newArr.concat(arr2);
   saveTasks();
-  location.reload();
+  initUI();
 }
 
 // * Makes and returns functional buttons for each task 'li' element
@@ -242,3 +249,6 @@ function makeButtons(task: Task, editPlaceholder: HTMLFormElement): HTMLDivEleme
 
   return buttonsContainer;
 }
+
+// * UI loader upon HTML load
+window.addEventListener('load', initUI);

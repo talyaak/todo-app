@@ -3,7 +3,7 @@
     "target": "es2016",
     "module": "es6",
     "moduleResolution": "node",
-    "lib": ["es2020", "DOM"],
+    "lib": ["es2020", "DOM", "DOM.Iterable"],
     "baseUrl": "./",
     "noUnusedLocals": false,
     "noUnusedParameters": false,

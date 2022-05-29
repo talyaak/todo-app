@@ -1,5 +1,3 @@
-// console.log("hi baby girl 123")
-
 type Task = {
   title: string
   completed: boolean
@@ -13,6 +11,7 @@ const form = document.getElementById("new-task-form") as HTMLFormElement;
 const input = document.getElementById("new-task-title") as HTMLInputElement;
 const clear = document.getElementById("clear") as HTMLButtonElement;
 const pendingTasks = document.getElementById("pending-tasks") as HTMLDivElement;
+let activeEdit = false;
 let tasks: Task[] = loadTasks(); // * using localStorage to load tasks (if they exist)
 
 pendingTasks.innerText = "You have 0 pending tasks"
@@ -38,14 +37,12 @@ form?.addEventListener("submit", e => {
   }
 
   tasks = [newTask].concat(tasks); // * rearranging the task (recent task is first)
-  // tasks.push(newTask); // * New task added, list updated
   saveTasks(); // * localStorage is also updated
   location.reload();
-  // addListItem(newTask); // * adds the input to task list
-  // input.value = ""; // * resets text bar
 
 })
 
+// * Clear button, remove all & refresh page
 clear.addEventListener("click", () => {
   console.log("pressed");
   localStorage.removeItem("TASKS");
@@ -53,21 +50,23 @@ clear.addEventListener("click", () => {
 
 })
 
+// * Adds 'li' element for Task object
 function addListItem(task: Task): void {
   const item = document.createElement("li");
   const label = document.createElement("label");
   const checkbox = document.createElement("input");
+  const editPlaceholder = document.createElement("form");
 
   const editButton = document.createElement("button")
   editButton.innerHTML = '<img src="edit.png" alt="" id="edit">';
-  editButton.addEventListener("click", () => editTask(task));
+  editButton.addEventListener("click", () => editTask(task, editPlaceholder));
 
   const delButton = document.createElement("button");
   delButton.innerHTML = '<img src="delete.png" alt="" id="garbage">';
   delButton.addEventListener("click", () => deleteTask(task));
 
   const buttonsContainer = document.createElement("div");
-  buttonsContainer.setAttribute("id","buttons-container");
+  buttonsContainer.setAttribute("id", "buttons-container");
   buttonsContainer.appendChild(editButton);
   buttonsContainer.appendChild(delButton);
 
@@ -85,9 +84,9 @@ function addListItem(task: Task): void {
   if (task.completed) { // * adding strike if task done (upon refresh)
     const s = document.createElement("s");
     s.append(label);
-    item.append(s, buttonsContainer);
+    item.append(s, editPlaceholder, buttonsContainer);
   }
-  else { item.append(label, buttonsContainer); }
+  else { item.append(label, editPlaceholder, buttonsContainer); }
 
   taskList?.append(item); // * '?' to prevent error when taskList == null
 
@@ -95,16 +94,19 @@ function addListItem(task: Task): void {
 
 }
 
+// * Save tasks on local storage
 function saveTasks(): void {
   localStorage.setItem("TASKS", JSON.stringify(tasks));
 }
 
+// * Load tasks from local storage
 function loadTasks(): Task[] {
   const taskJSON = localStorage.getItem("TASKS");
   if (taskJSON === null) return []; // * If there are no tasks
   return JSON.parse(taskJSON); // * At least one task
 }
 
+// * Delete task from list
 function deleteTask(task: Task): void {
   console.log("del clicked");
   let count = 0;
@@ -120,17 +122,60 @@ function deleteTask(task: Task): void {
 }
 
 // * Prompts an "edit task" window and updates it
-function editTask(task: Task): void {
-  let updatedTask: string|null = prompt("Edit task", "enter here...");
-  if (typeof updatedTask === 'string' 
-    && updatedTask.trim().length !== 0
-    && updatedTask !== "enter here...") {
-    task.title = updatedTask;
+function editTask(task: Task, editPlaceholder: HTMLFormElement): void {
+  // * Checks if there is a previous edit, removes it
+  if (activeEdit) {
+    const editList = document.body.getElementsByClassName("edit-element");
+    for (let element of editList) {
+      // element.innerHTML = "";
+      element.firstChild?.remove();
+      element.lastChild?.remove();
+    }
   }
-  else alert("did not enter a task");
-  saveTasks();
-  location.reload();
+  if (editPlaceholder.innerHTML !== "") return; // * Checks if there's an edit element already
   
+  // * if false, create edit element
+  activeEdit = true;
+
+  const editInput = document.createElement("input");
+  editPlaceholder.classList.add("edit-element");
+
+  // * Configuring elements for edit
+  editInput.setAttribute("type", "text");
+  editInput.setAttribute("autocomplete","off");
+  editInput.setAttribute("id", "edit-title");
+  editInput.setAttribute("placeholder", "update task..")
+  const finish = document.createElement("button");
+  finish.setAttribute("type", "submit");
+  finish.setAttribute("style","font-size:15px")
+  finish.innerText = "✓";
+
+  // * Applying them on the HTML
+  editPlaceholder.appendChild(editInput);
+  editPlaceholder.appendChild(finish);
+
+  // * When clicking ✓ -> save tasks, ends edit, reloads UI
+  editPlaceholder.addEventListener("submit", () => {
+    const value = editInput?.value;;
+    if (value.trim().length !== 0) {
+      task.title = editInput?.value;
+      saveTasks();
+      activeEdit = false;
+      location.reload();
+    }
+  })
+
+
+  // let updatedTask: string|null = prompt("Edit task", "enter here...");
+  // if (typeof updatedTask === 'string' 
+  //   && updatedTask.trim().length !== 0
+  //   && updatedTask !== "enter here...") {
+  //   task.title = updatedTask;
+  // }
+  // else alert("did not enter a task");
+  // saveTasks();
+  // location.reload();
+
 }
 // * Updates task number on UI
 function taskCount(): void {
